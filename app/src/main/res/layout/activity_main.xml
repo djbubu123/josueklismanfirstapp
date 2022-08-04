@@ -30,7 +30,7 @@
         <EditText
             android:id="@+id/inputPrice"
             android:hint="Precio..."
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:layout_marginTop="5dp"
             android:layout_marginHorizontal="5dp"
             android:paddingTop="10dp"

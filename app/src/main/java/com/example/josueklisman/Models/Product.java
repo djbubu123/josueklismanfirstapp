@@ -1,5 +1,8 @@
 package com.example.josueklisman.Models;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Product {
     private String idproduct;
     private String name;
@@ -30,6 +33,13 @@ public class Product {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Map<String, Object> getMapWithoutId(){
+        Map<String, Object> product = new HashMap<>();
+        product.put("name", name);
+        product.put("price", price);
+        return product;
     }
 
     @Override
