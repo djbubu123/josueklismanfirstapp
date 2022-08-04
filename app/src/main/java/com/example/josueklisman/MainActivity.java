@@ -135,6 +135,72 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_create:
                 create();
                 break;
+            case R.id.menu_save:
+                if(productSelected != null){
+                    if (validateEditInputs()){
+                        Product p = new Product();
+                        p.setIdproduct(productSelected.getIdproduct());
+                        p.setName(name);
+                        p.setPrice(price);
+                        db.collection("products")
+                                .document(p.getIdproduct())
+                                .set(p.getMapWithoutId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        listProducts();
+                                        linearLayoutEdit.setVisibility(View.GONE);
+                                        Toast.makeText(
+                                                MainActivity.this,
+                                                "Editado Correctamente",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        listProducts();
+                                        linearLayoutEdit.setVisibility(View.GONE);
+                                        Toast.makeText(
+                                                MainActivity.this,
+                                                "Error",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                }
+                break;
+            case R.id.menu_delete:
+                if(productSelected != null){
+                    if (validateEditInputs()){
+                        Product p = new Product();
+                        p.setIdproduct(productSelected.getIdproduct());
+                        p.setName(name);
+                        p.setPrice(price);
+                        db.collection("products")
+                                .document(p.getIdproduct())
+                                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        listProducts();
+                                        linearLayoutEdit.setVisibility(View.GONE);
+                                        Toast.makeText(
+                                                MainActivity.this,
+                                                "Eliminado Correctamente",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        listProducts();
+                                        linearLayoutEdit.setVisibility(View.GONE);
+                                        Toast.makeText(
+                                                MainActivity.this,
+                                                "Error",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -193,8 +259,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     public void showError(EditText input, String s){
         input.requestFocus();
         input.setError(s);
+    }
+
+    public boolean validateEditInputs(){
+        String name = inputName.getText().toString();
+        String price = inputPrice.getText().toString();
+        if (name.isEmpty()){
+            showError(inputName, "el nombre no puede estar vacio");
+            return false;
+        } else if (name.length()<3){
+            showError(inputName, "minimo 3 letras en el nombre");
+            return false;
+        } else if (price.isEmpty()){
+            showError(inputPrice, "el precio no puede estar vacio");
+            return false;
+        } else{
+            return true;
+        }
     }
 }
