@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         listViewProducts = findViewById(R.id.listViewProducts);
         linearLayoutEdit = findViewById(R.id.linearLayoutEdit);
+        linearLayoutEdit.setVisibility(View.GONE);
 
         listViewProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -101,13 +102,15 @@ public class MainActivity extends AppCompatActivity {
                                 p.setPrice(Double.parseDouble(document.getData().get("price").toString()));
                                 listProducts.add(p);
                             }
+                            listViewProductAdapter = new ListViewProductAdapter(MainActivity.this, listProducts);
 
-                            arrayAdapterProduct = new ArrayAdapter<Product>(
+
+                            /*arrayAdapterProduct = new ArrayAdapter<Product>(
                                     MainActivity.this,
                                     android.R.layout.simple_list_item_1,
                                     listProducts
-                            );
-                            listViewProducts.setAdapter(arrayAdapterProduct);
+                            );*/
+                            listViewProducts.setAdapter(listViewProductAdapter);
                         } else {
                             Log.w("Error", "Error getting products.", task.getException());
                         }
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (name.length()<3){
                     showError(mInputName, "minimo 3 letras en el nombre");
                 } else if (price.isEmpty()){
-                    showError(mInputName, "el precio no puede estar vacio");
+                    showError(mInputPrice, "el precio no puede estar vacio");
                 } else {
                     Product p = new Product();
                     p.setName(name);
@@ -171,7 +174,10 @@ public class MainActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
-                                    p.setIdproduct(documentReference.getId().toString());
+                                    Toast.makeText(
+                                            MainActivity.this,
+                                            "Registrado Correctamente",
+                                            Toast.LENGTH_LONG).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -180,10 +186,8 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this,"Error", Toast.LENGTH_LONG);
                                 }
                             });
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Registrado Correctamente \n id: "+p.getIdproduct(),
-                            Toast.LENGTH_LONG).show();
+                    listProducts();
+                    dialog.hide();
                 }
             }
         });
