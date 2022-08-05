@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void unused) {
                                         listProducts();
-                                        linearLayoutEdit.setVisibility(View.GONE);
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Editado Correctamente",
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         listProducts();
-                                        linearLayoutEdit.setVisibility(View.GONE);
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Error",
@@ -166,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+                    linearLayoutEdit.setVisibility(View.GONE);
+                    productSelected = null;
                 }
                 break;
             case R.id.menu_delete:
@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void unused) {
                                         listProducts();
-                                        linearLayoutEdit.setVisibility(View.GONE);
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Eliminado Correctamente",
@@ -191,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         listProducts();
-                                        linearLayoutEdit.setVisibility(View.GONE);
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Error",
@@ -199,7 +197,12 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+                    linearLayoutEdit.setVisibility(View.GONE);
+                    productSelected = null;
                 }
+                break;
+            case R.id.menu_sync:
+                listProducts();
                 break;
         }
 
@@ -257,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        linearLayoutEdit.setVisibility(View.GONE);
+        productSelected = null;
     }
 
 
