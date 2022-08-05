@@ -34,15 +34,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Product> listProducts = new ArrayList<>();
-    ArrayAdapter<Product> arrayAdapterProduct;
     ListViewProductAdapter listViewProductAdapter;
     LinearLayout linearLayoutEdit;
     ListView listViewProducts;
+    Menu menuOne;
 
     EditText inputName, inputPrice;
     Button btnCancel;
 
-    Product productSelected;
+    Product productSelected = null;
 
     FirebaseFirestore db;
 
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 productSelected = (Product) adapterView.getItemAtPosition(i);
                 inputName.setText(productSelected.getName());
                 inputPrice.setText(productSelected.getPrice().toString());
-
                 linearLayoutEdit.setVisibility(View.VISIBLE);
+                setMenuItemsVisible();
             }
         });
 
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 linearLayoutEdit.setVisibility(View.GONE);
                 productSelected = null;
+                setMenuItemsVisible();
             }
         });
 
@@ -104,12 +105,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                             listViewProductAdapter = new ListViewProductAdapter(MainActivity.this, listProducts);
 
-
-                            /*arrayAdapterProduct = new ArrayAdapter<Product>(
-                                    MainActivity.this,
-                                    android.R.layout.simple_list_item_1,
-                                    listProducts
-                            );*/
                             listViewProducts.setAdapter(listViewProductAdapter);
                         } else {
                             Log.w("Error", "Error getting products.", task.getException());
@@ -121,7 +116,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.crud_menu, menu);
+        menuOne = menu;
+        setMenuItemsVisible();
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void setMenuItemsVisible(){
+        if (productSelected == null){
+            menuOne.getItem(0).setVisible(true);//sync
+            menuOne.getItem(1).setVisible(true);//create
+            menuOne.getItem(2).setVisible(false);//save
+            menuOne.getItem(3).setVisible(false);//delete
+        } else {
+            menuOne.getItem(0).setVisible(false);//sync
+            menuOne.getItem(1).setVisible(false);//create
+            menuOne.getItem(2).setVisible(true);//save
+            menuOne.getItem(3).setVisible(true);//delete
+        }
     }
 
     @Override
@@ -144,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
                         p.setPrice(price);
                         db.collection("products")
                                 .document(p.getIdproduct())
-                                .set(p.getMapWithoutId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                .set(p.getMapWithoutId())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
-                                        listProducts();
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Editado Correctamente",
@@ -156,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        listProducts();
                                         Toast.makeText(
                                                 MainActivity.this,
                                                 "Error",
@@ -164,44 +174,41 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+                    listProducts();
                     linearLayoutEdit.setVisibility(View.GONE);
                     productSelected = null;
+                    setMenuItemsVisible();
                 }
                 break;
             case R.id.menu_delete:
                 if(productSelected != null){
-                    if (validateEditInputs()){
-                        Product p = new Product();
-                        p.setIdproduct(productSelected.getIdproduct());
-                        p.setName(name);
-                        p.setPrice(price);
-                        db.collection("products")
-                                .document(p.getIdproduct())
-                                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        listProducts();
-                                        Toast.makeText(
-                                                MainActivity.this,
-                                                "Eliminado Correctamente",
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        listProducts();
-                                        Toast.makeText(
-                                                MainActivity.this,
-                                                "Error",
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                    }
+                    db.collection("products")
+                            .document(productSelected.getIdproduct())
+                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Toast.makeText(
+                                            MainActivity.this,
+                                            "Eliminado Correctamente",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(
+                                            MainActivity.this,
+                                            "Error",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                    listProducts();
                     linearLayoutEdit.setVisibility(View.GONE);
                     productSelected = null;
+                    setMenuItemsVisible();
                 }
                 break;
             case R.id.menu_sync:
+                setMenuItemsVisible();
                 listProducts();
                 break;
         }
